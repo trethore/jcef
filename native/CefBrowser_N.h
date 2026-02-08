@@ -438,6 +438,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv*, jobject, jobject);
 
 /*
  * Class:     org_cef_browser_CefBrowser_N
+ * Method:    N_SendCefKeyEvent
+ * Signature: (Lorg/cef/input/CefKeyEvent;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendCefKeyEvent(JNIEnv*, jobject, jobject);
+
+/*
+ * Class:     org_cef_browser_CefBrowser_N
  * Method:    N_SendMouseEvent
  * Signature: (Ljava/awt/event/MouseEvent;)V
  */

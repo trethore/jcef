@@ -16,6 +16,7 @@ import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
+import org.cef.input.CefKeyEvent;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
@@ -644,6 +645,19 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    @Override
+    public final void sendCefKeyEvent(CefKeyEvent e) {
+        if (e == null) {
+            return;
+        }
+
+        try {
+            N_SendCefKeyEvent(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     /**
      * Send a mouse event.
      * @param e The event to send.
@@ -870,6 +884,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_WasResized(int width, int height);
     private final native void N_Invalidate();
     private final native void N_SendKeyEvent(KeyEvent e);
+    private final native void N_SendCefKeyEvent(CefKeyEvent e);
     private final native void N_SendMouseEvent(MouseEvent e);
     private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
     private final native void N_DragTargetDragEnter(

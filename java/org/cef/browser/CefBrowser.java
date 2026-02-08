@@ -11,6 +11,7 @@ import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
+import org.cef.input.CefKeyEvent;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
@@ -258,6 +259,18 @@ public interface CefBrowser {
      * @param enable set to true to give the focus to the browser
      **/
     public void setFocus(boolean enable);
+
+    /**
+     * Send a platform-native keyboard event directly to CEF.
+     *
+     * This bypasses the AWT key event translation path and is useful for custom
+     * input pipelines (for example GLFW-based OSR integrations).
+     *
+     * @param event keyboard event payload.
+     */
+    public default void sendCefKeyEvent(CefKeyEvent event) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     /**
      * Set whether the window containing the browser is visible

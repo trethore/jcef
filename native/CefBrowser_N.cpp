@@ -71,6 +71,20 @@ int GetCefModifiers(JNIEnv* env, jclass cls, int modifiers) {
   return cef_modifiers;
 }
 
+bool GetJNIFieldChar(JNIEnv* env,
+                     jclass cls,
+                     jobject obj,
+                     const char* field_name,
+                     char16_t* value) {
+  jfieldID field = env->GetFieldID(cls, field_name, "C");
+  if (field) {
+    *value = static_cast<char16_t>(env->GetCharField(obj, field));
+    return true;
+  }
+  env->ExceptionClear();
+  return false;
+}
+
 #if defined(OS_LINUX)
 
 // From ui/events/keycodes/keyboard_codes_posix.h.
@@ -1899,6 +1913,83 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendKeyEvent(JNIEnv* env,
   } else {
     return;
   }
+
+  browser->GetHost()->SendKeyEvent(cef_event);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendCefKeyEvent(JNIEnv* env,
+                                                      jobject obj,
+                                                      jobject key_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(key_event));
+  if (!cls)
+    return;
+
+  int event_type = 0;
+  int modifiers = 0;
+  int windows_key_code = 0;
+  int native_key_code = 0;
+  int is_system_key = 0;
+  char16_t character = 0;
+  char16_t unmodified_character = 0;
+  if (!GetJNIFieldInt(env, cls, key_event, "type", &event_type) ||
+      !GetJNIFieldInt(env, cls, key_event, "modifiers", &modifiers) ||
+      !GetJNIFieldInt(env, cls, key_event, "windows_key_code",
+                      &windows_key_code) ||
+      !GetJNIFieldInt(env, cls, key_event, "native_key_code", &native_key_code) ||
+      !GetJNIFieldBoolean(env, cls, key_event, "is_system_key", &is_system_key) ||
+      !GetJNIFieldChar(env, cls, key_event, "character", &character) ||
+      !GetJNIFieldChar(env, cls, key_event, "unmodified_character",
+                       &unmodified_character)) {
+    return;
+  }
+
+  jlong scan_code = 0;
+  GetJNIFieldLong(env, cls, key_event, "scan_code", &scan_code);
+
+  CefKeyEvent cef_event;
+  switch (event_type) {
+    case 0:
+      cef_event.type = KEYEVENT_RAWKEYDOWN;
+      break;
+    case 1:
+      cef_event.type = KEYEVENT_KEYDOWN;
+      break;
+    case 2:
+      cef_event.type = KEYEVENT_KEYUP;
+      break;
+    case 3:
+      cef_event.type = KEYEVENT_CHAR;
+      break;
+    default:
+      return;
+  }
+
+  cef_event.modifiers = modifiers;
+  cef_event.windows_key_code = windows_key_code;
+  cef_event.native_key_code = native_key_code;
+  cef_event.is_system_key = (is_system_key != 0);
+  cef_event.character = character;
+  cef_event.unmodified_character = unmodified_character;
+
+#if defined(OS_WIN)
+  if (scan_code != 0) {
+    const int scan_code_value = static_cast<int>(scan_code);
+
+    if (cef_event.windows_key_code == 0) {
+      BYTE vk_code =
+          LOBYTE(MapVirtualKey(static_cast<UINT>(scan_code_value), MAPVK_VSC_TO_VK));
+      cef_event.windows_key_code = vk_code;
+    }
+
+    if (cef_event.native_key_code == 0) {
+      cef_event.native_key_code = (scan_code_value << 16) | 1;
+      if (cef_event.type == KEYEVENT_KEYUP)
+        cef_event.native_key_code |= 0xC0000000;
+    }
+  }
+#endif
 
   browser->GetHost()->SendKeyEvent(cef_event);
 }
