@@ -12,6 +12,8 @@ import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
 import org.cef.input.CefKeyEvent;
+import org.cef.input.CefMouseEvent;
+import org.cef.input.CefMouseWheelEvent;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
@@ -269,6 +271,30 @@ public interface CefBrowser {
      * @param event keyboard event payload.
      */
     public default void sendCefKeyEvent(CefKeyEvent event) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Send a CEF mouse event directly to CEF.
+     *
+     * This bypasses the AWT mouse event translation path and is useful for
+     * custom input pipelines (for example GLFW-based OSR integrations).
+     *
+     * @param event mouse event payload.
+     */
+    public default void sendCefMouseEvent(CefMouseEvent event) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Send a CEF mouse wheel event directly to CEF.
+     *
+     * This bypasses the AWT mouse wheel translation path and is useful for
+     * custom input pipelines (for example GLFW-based OSR integrations).
+     *
+     * @param event mouse wheel event payload.
+     */
+    public default void sendCefMouseWheelEvent(CefMouseWheelEvent event) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

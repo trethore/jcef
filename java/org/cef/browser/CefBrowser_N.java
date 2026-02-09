@@ -17,6 +17,8 @@ import org.cef.handler.CefDialogHandler.FileDialogMode;
 import org.cef.handler.CefRenderHandler;
 import org.cef.handler.CefWindowHandler;
 import org.cef.input.CefKeyEvent;
+import org.cef.input.CefMouseEvent;
+import org.cef.input.CefMouseWheelEvent;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
@@ -658,6 +660,32 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
         }
     }
 
+    @Override
+    public final void sendCefMouseEvent(CefMouseEvent e) {
+        if (e == null) {
+            return;
+        }
+
+        try {
+            N_SendCefMouseEvent(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
+    @Override
+    public final void sendCefMouseWheelEvent(CefMouseWheelEvent e) {
+        if (e == null) {
+            return;
+        }
+
+        try {
+            N_SendCefMouseWheelEvent(e);
+        } catch (UnsatisfiedLinkError ule) {
+            ule.printStackTrace();
+        }
+    }
+
     /**
      * Send a mouse event.
      * @param e The event to send.
@@ -885,6 +913,8 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
     private final native void N_Invalidate();
     private final native void N_SendKeyEvent(KeyEvent e);
     private final native void N_SendCefKeyEvent(CefKeyEvent e);
+    private final native void N_SendCefMouseEvent(CefMouseEvent e);
+    private final native void N_SendCefMouseWheelEvent(CefMouseWheelEvent e);
     private final native void N_SendMouseEvent(MouseEvent e);
     private final native void N_SendMouseWheelEvent(MouseWheelEvent e);
     private final native void N_DragTargetDragEnter(

@@ -1995,6 +1995,97 @@ Java_org_cef_browser_CefBrowser_1N_N_1SendCefKeyEvent(JNIEnv* env,
 }
 
 JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendCefMouseEvent(JNIEnv* env,
+                                                         jobject obj,
+                                                         jobject mouse_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(mouse_event));
+  if (!cls)
+    return;
+
+  int event_type = 0;
+  int x = 0;
+  int y = 0;
+  int modifiers = 0;
+  int button = 0;
+  int click_count = 0;
+  if (!GetJNIFieldInt(env, cls, mouse_event, "type", &event_type) ||
+      !GetJNIFieldInt(env, cls, mouse_event, "x", &x) ||
+      !GetJNIFieldInt(env, cls, mouse_event, "y", &y) ||
+      !GetJNIFieldInt(env, cls, mouse_event, "modifiers", &modifiers) ||
+      !GetJNIFieldInt(env, cls, mouse_event, "button", &button) ||
+      !GetJNIFieldInt(env, cls, mouse_event, "click_count", &click_count)) {
+    return;
+  }
+
+  CefMouseEvent cef_event;
+  cef_event.x = x;
+  cef_event.y = y;
+  cef_event.modifiers = modifiers;
+
+  if (event_type >= 0 && event_type <= 2) {
+    browser->GetHost()->SendMouseMoveEvent(cef_event, false);
+    return;
+  }
+
+  if (event_type == 3) {
+    browser->GetHost()->SendMouseMoveEvent(cef_event, true);
+    return;
+  }
+
+  if (event_type != 4 && event_type != 5) {
+    return;
+  }
+
+  CefBrowserHost::MouseButtonType cef_mbt;
+  if (button == 1)
+    cef_mbt = MBT_LEFT;
+  else if (button == 2)
+    cef_mbt = MBT_MIDDLE;
+  else if (button == 3)
+    cef_mbt = MBT_RIGHT;
+  else
+    return;
+
+  if (click_count < 1)
+    click_count = 1;
+
+  browser->GetHost()->SendMouseClickEvent(cef_event, cef_mbt,
+                                          (event_type == 5), click_count);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendCefMouseWheelEvent(
+    JNIEnv* env,
+    jobject obj,
+    jobject mouse_wheel_event) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, obj);
+  ScopedJNIClass cls(env, env->GetObjectClass(mouse_wheel_event));
+  if (!cls)
+    return;
+
+  int x = 0;
+  int y = 0;
+  int modifiers = 0;
+  int delta_x = 0;
+  int delta_y = 0;
+  if (!GetJNIFieldInt(env, cls, mouse_wheel_event, "x", &x) ||
+      !GetJNIFieldInt(env, cls, mouse_wheel_event, "y", &y) ||
+      !GetJNIFieldInt(env, cls, mouse_wheel_event, "modifiers", &modifiers) ||
+      !GetJNIFieldInt(env, cls, mouse_wheel_event, "delta_x", &delta_x) ||
+      !GetJNIFieldInt(env, cls, mouse_wheel_event, "delta_y", &delta_y)) {
+    return;
+  }
+
+  CefMouseEvent cef_event;
+  cef_event.x = x;
+  cef_event.y = y;
+  cef_event.modifiers = modifiers;
+
+  browser->GetHost()->SendMouseWheelEvent(cef_event, delta_x, delta_y);
+}
+
+JNIEXPORT void JNICALL
 Java_org_cef_browser_CefBrowser_1N_N_1SendMouseEvent(JNIEnv* env,
                                                      jobject obj,
                                                      jobject mouse_event) {
