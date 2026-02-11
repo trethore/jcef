@@ -102,6 +102,21 @@ public abstract class CefPrintSettings {
             Rectangle printable_area_device_units, boolean landscape_needs_flip);
 
     /**
+     * Set the printer printable area in device units.
+     * Some platforms already provide flipped area. Set |landscape_needs_flip|
+     * to false on those platforms to avoid double flipping.
+     */
+    public void setPrinterPrintableArea(CefSize physical_size_device_units,
+            CefRect printable_area_device_units, boolean landscape_needs_flip) {
+        setPrinterPrintableArea(physical_size_device_units != null
+                        ? physical_size_device_units.toDimension()
+                        : null,
+                printable_area_device_units != null ? printable_area_device_units.toRectangle()
+                                                    : null,
+                landscape_needs_flip);
+    }
+
+    /**
      * Set the device name.
      */
     public abstract void setDeviceName(String name);

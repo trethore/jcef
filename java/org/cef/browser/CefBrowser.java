@@ -14,6 +14,7 @@ import org.cef.handler.CefWindowHandler;
 import org.cef.input.CefKeyEvent;
 import org.cef.input.CefMouseEvent;
 import org.cef.input.CefMouseWheelEvent;
+import org.cef.misc.CefPoint;
 import org.cef.misc.CefPdfPrintSettings;
 import org.cef.network.CefRequest;
 
@@ -393,6 +394,15 @@ public interface CefBrowser {
      * @param inspectAt a position in the UI which should be inspected.
      */
     public void openDevTools(Point inspectAt);
+
+    /**
+     * Open an instance of the DevTools to be displayed in its own window.
+     *
+     * @param inspectAt a position in the UI which should be inspected.
+     */
+    public default void openDevTools(CefPoint inspectAt) {
+        openDevTools(inspectAt != null ? inspectAt.toPoint() : null);
+    }
 
     /**
      * Close the DevTools.

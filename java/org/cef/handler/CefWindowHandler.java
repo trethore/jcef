@@ -5,6 +5,7 @@
 package org.cef.handler;
 
 import org.cef.browser.CefBrowser;
+import org.cef.misc.CefRect;
 
 import java.awt.Rectangle;
 
@@ -19,6 +20,20 @@ public interface CefWindowHandler {
      * @return The view rectangle.
      */
     public Rectangle getRect(CefBrowser browser);
+
+    /**
+     * Retrieve the view rectangle.
+     * @param browser The browser generating the event.
+     * @param result The result rectangle.
+     */
+    public default void getRect(CefBrowser browser, CefRect result) {
+        Rectangle rect = getRect(browser);
+        if (result == null || rect == null) {
+            return;
+        }
+
+        result.set(rect.x, rect.y, rect.width, rect.height);
+    }
 
     /**
      * Implement this method to handle mouse events on Windows.

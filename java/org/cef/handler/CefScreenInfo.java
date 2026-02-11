@@ -4,6 +4,8 @@
 
 package org.cef.handler;
 
+import org.cef.misc.CefRect;
+
 import java.awt.Rectangle;
 
 /**
@@ -20,6 +22,22 @@ public class CefScreenInfo {
 
     public void Set(double device_scale_factor, int depth, int depth_per_component,
             boolean is_monochrome, Rectangle rect, Rectangle availableRect) {
+        this.device_scale_factor = device_scale_factor;
+        this.depth = depth;
+        this.depth_per_component = depth_per_component;
+        this.is_monochrome = is_monochrome;
+        this.x = rect.x;
+        this.y = rect.y;
+        this.width = rect.width;
+        this.height = rect.height;
+        this.available_x = availableRect.x;
+        this.available_y = availableRect.y;
+        this.available_width = availableRect.width;
+        this.available_height = availableRect.height;
+    }
+
+    public void Set(double device_scale_factor, int depth, int depth_per_component,
+            boolean is_monochrome, CefRect rect, CefRect availableRect) {
         this.device_scale_factor = device_scale_factor;
         this.depth = depth;
         this.depth_per_component = depth_per_component;

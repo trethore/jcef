@@ -146,7 +146,7 @@ abstract class CefBrowser_N extends CefNativeAdapter implements CefBrowser {
 
     @Override
     public void openDevTools() {
-        openDevTools(null);
+        openDevTools((Point) null);
     }
 
     @Override

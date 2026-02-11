@@ -7,6 +7,8 @@ package org.cef.handler;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefPaintEvent;
 import org.cef.callback.CefDragData;
+import org.cef.misc.CefPoint;
+import org.cef.misc.CefRect;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -42,6 +44,17 @@ public interface CefRenderHandler {
     public Point getScreenPoint(CefBrowser browser, Point viewPoint);
 
     /**
+     * Retrieve the screen point for the specified view point.
+     * @param browser The browser generating the event.
+     * @param viewPoint The point in the view.
+     * @return The screen point.
+     */
+    public default CefPoint getScreenPoint(CefBrowser browser, CefPoint viewPoint) {
+        Point screenPoint = getScreenPoint(browser, viewPoint != null ? viewPoint.toPoint() : null);
+        return screenPoint != null ? new CefPoint(screenPoint) : null;
+    }
+
+    /**
      * Show or hide the popup window.
      * @param browser The browser generating the event.
      * @param show True if the popup window is being shown.
@@ -54,6 +67,29 @@ public interface CefRenderHandler {
      * @param size Size of the popup window.
      */
     public void onPopupSize(CefBrowser browser, Rectangle size);
+
+    /**
+     * Size the popup window.
+     * @param browser The browser generating the event.
+     * @param size Size of the popup window.
+     */
+    public default void onPopupSize(CefBrowser browser, CefRect size) {
+        onPopupSize(browser, size != null ? size.toRectangle() : null);
+    }
+
+    /**
+     * Retrieve the view rectangle.
+     * @param browser The browser generating the event.
+     * @param result The result rectangle.
+     */
+    public default void getViewRect(CefBrowser browser, CefRect result) {
+        Rectangle viewRect = getViewRect(browser);
+        if (result == null || viewRect == null) {
+            return;
+        }
+
+        result.set(viewRect.x, viewRect.y, viewRect.width, viewRect.height);
+    }
 
     /**
      * Handle painting.
