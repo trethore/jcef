@@ -134,6 +134,14 @@ public class CefApp extends CefAppHandlerAdapter {
     private HashSet<CefClient> clients_ = new HashSet<CefClient>();
     private CefSettings settings_ = null;
 
+    private static boolean runNativeInitOnCurrentThread() {
+        // On macOS, calling native initialization from the EDT via invokeAndWait
+        // can deadlock when the caller is the first JVM thread (for example with
+        // -XstartOnFirstThread), because native code synchronously hops to Cocoa
+        // main thread during initialization.
+        return OS.isMacintosh();
+    }
+
     /**
      * To get an instance of this class, use the method
      * getInstance() instead of this CTOR.
@@ -170,7 +178,7 @@ public class CefApp extends CefAppHandlerAdapter {
                         throw new IllegalStateException("Failed to pre-initialize native code");
                 }
             };
-            if (SwingUtilities.isEventDispatchThread())
+            if (runNativeInitOnCurrentThread() || SwingUtilities.isEventDispatchThread())
                 r.run();
             else
                 SwingUtilities.invokeAndWait(r);
@@ -437,7 +445,7 @@ public class CefApp extends CefAppHandlerAdapter {
                     }
                 }
             };
-            if (SwingUtilities.isEventDispatchThread())
+            if (runNativeInitOnCurrentThread() || SwingUtilities.isEventDispatchThread())
                 r.run();
             else
                 SwingUtilities.invokeAndWait(r);

@@ -180,7 +180,9 @@ bool Context::Initialize(JNIEnv* env,
                          jobject c,
                          jobject appHandler,
                          jobject jsettings) {
+#if !defined(OS_MACOSX)
   DCHECK(thread_checker_.CalledOnValidThread());
+#endif
 
 #if defined(OS_WIN)
   CefMainArgs main_args(::GetModuleHandle(nullptr));
@@ -246,7 +248,9 @@ void Context::OnContextInitialized() {
 }
 
 void Context::DoMessageLoopWork() {
+#if !defined(OS_MACOSX)
   DCHECK(thread_checker_.CalledOnValidThread());
+#endif
 
 #if defined(OS_MACOSX)
   util_mac::CefDoMessageLoopWorkOnMainThread();
@@ -256,7 +260,9 @@ void Context::DoMessageLoopWork() {
 }
 
 void Context::Shutdown() {
+#if !defined(OS_MACOSX)
   DCHECK(thread_checker_.CalledOnValidThread());
+#endif
 
   // Clear scheme handler factories on shutdown to avoid refcount DCHECK.
   CefClearSchemeHandlerFactories();
@@ -290,7 +296,9 @@ Context::Context() : external_message_pump_(true) {
 }
 
 Context::~Context() {
+#if !defined(OS_MACOSX)
   DCHECK(thread_checker_.CalledOnValidThread());
+#endif
   g_context = nullptr;
 
 #if defined(OS_MACOSX)
