@@ -34,7 +34,7 @@ echo ERROR: Native build output path does not exist
 goto end
 )
 
-set CLS_PATH=.\third_party\jogamp\jar\*;%OUT_PATH%
+set CLS_PATH=%OUT_PATH%
 set RUN_TYPE=%~3
 
 :: Remove the first three params (%1, %2 and %3) and pass the rest to java.

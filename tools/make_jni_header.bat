@@ -21,7 +21,7 @@ goto end
 )
 
 set OUT_PATH=".\native"
-set CLS_PATH=".\third_party\jogamp\jar\*;.\out\%1"
+set CLS_PATH=".\out\%1"
 set CLS_NAME=""
 
 SET TMP="%2"

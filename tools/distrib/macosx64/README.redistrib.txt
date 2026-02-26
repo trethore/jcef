@@ -58,10 +58,6 @@ The following components are required. CEF will not function without them.
 
 * Java archives
     jcef.jar
-    gluegen-rt.jar
-    gluegen-rt-natives-macosx-universal.jar
-    jogl-all.jar
-    jogl-all-natives-macosx-universal.jar
 
 * CEF JNI library
     libjcef.dylib

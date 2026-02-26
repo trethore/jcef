@@ -28,15 +28,7 @@ goto end
 
 set OUT_DOCS_PATH=".\out\docs"
 set SOURCE_PATH=".\java"
-set JOGAMP_PATH=".\third_party\jogamp"
-set JOGAMP_JAR_PATH="%JOGAMP_PATH%\jar"
 set TOOLS_DISTRIB_PATH=".\tools\distrib\%1"
-
-if "%1" == "win32" (
-set JOGAMP_JAR_SUFFIX="i586"
-) else (
-set JOGAMP_JAR_SUFFIX="amd64"
-)
 
 :: Create the JCEF jar file.
 cd tools
@@ -50,10 +42,6 @@ cd ..
 
 :: Copy JAR files to the bin directory.
 if not exist %DISTRIB_BIN_PATH% mkdir %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\gluegen-rt.jar %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\gluegen-rt-natives-windows-%JOGAMP_JAR_SUFFIX%.jar %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\jogl-all.jar %DISTRIB_BIN_PATH%
-copy %JOGAMP_JAR_PATH%\jogl-all-natives-windows-%JOGAMP_JAR_SUFFIX%.jar %DISTRIB_BIN_PATH%
 copy %OUT_PATH%\jcef.jar %DISTRIB_BIN_PATH%
 
 :: Copy test programs and its sources to the bin directory.
@@ -88,7 +76,6 @@ call python tools\make_readme.py --output-dir %DISTRIB_PATH%\ --platform %DISTRI
 
 :: Copy miscellaneous files to the root directory.
 copy .\LICENSE.txt %DISTRIB_PATH%
-xcopy /sfy %JOGAMP_PATH%\*.LICENSE.txt %DISTRIB_PATH%
 :: Cannot use a variable substitution for /exclude because otherwise xcopy will fail.
 xcopy /sfy %TOOLS_DISTRIB_PATH%\* %DISTRIB_PATH% /exclude:.\tools\distrib\EXCLUDE_FILES.txt
 

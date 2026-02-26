@@ -13,8 +13,9 @@ import org.cef.CefClient;
 public class CefBrowserFactory {
     public static CefBrowser create(CefClient client, String url, boolean isOffscreenRendered,
             boolean isTransparent, CefRequestContext context, CefBrowserSettings settings) {
-        if (isOffscreenRendered)
-            return new CefBrowserOsr(client, url, isTransparent, context, settings);
+        if (isOffscreenRendered) {
+            throw new UnsupportedOperationException("Off-screen rendering is no longer supported");
+        }
         return new CefBrowserWr(client, url, context, settings);
     }
 }

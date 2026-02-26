@@ -13,12 +13,6 @@
       classpath="third_party/appbundler/appbundler-1.0.jar" />
     
   <path id="class.path">
-    <fileset dir="third_party/jogamp/jar">
-      <include name="gluegen-rt.jar"/>
-      <include name="gluegen-rt-natives-macosx-universal.jar"/>
-      <include name="jogl-all.jar"/>
-      <include name="jogl-all-natives-macosx-universal.jar"/>
-    </fileset>
     <fileset dir="third_party/junit" includes="junit*.jar"/>
   </path>
     
@@ -65,12 +59,6 @@
       <classpath dir="${out.path}">
         <include name="jcef.jar"/>
         <include name="jcef-tests.jar"/>
-      </classpath>
-      <classpath dir="third_party/jogamp/jar/">
-        <include name="gluegen-rt.jar"/>
-        <include name="gluegen-rt-natives-macosx-universal.jar" />
-        <include name="jogl-all.jar" />
-        <include name="jogl-all-natives-macosx-universal.jar" />
       </classpath>
       <classpath dir="third_party/junit" includes="junit*.jar"/>
       <option value="-Djava.library.path=$APP_ROOT/Contents/Java/:$APP_ROOT/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries" />

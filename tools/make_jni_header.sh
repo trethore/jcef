@@ -20,7 +20,7 @@ else
     fi
 
     HEADER_PATH="${DIR}/native"
-    CLS_PATH="${DIR}/third_party/jogamp/jar/*:${CLS_OUT_PATH}"
+    CLS_PATH="${CLS_OUT_PATH}"
     CLS_NAME="${2##*.}"
 
     javah -force -classpath "$CLS_PATH" -o "$HEADER_PATH/$CLS_NAME.h" $2

@@ -9,10 +9,6 @@ The following components are required. JCEF will not function without them.
 
 * Java archives.
     jcef.jar
-    gluegen-rt.jar
-    gluegen-rt-natives-linux-i586.jar
-    jogl-all.jar
-    jogl-all-natives-linux-i586.jar
 
 * CEF JNI library.
     libjcef.so
