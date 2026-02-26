@@ -9,7 +9,7 @@ else
   DIR="$( cd "$( dirname "$0" )" && cd .. && pwd )"
   OUT_PATH="${DIR}/out/$1"
   JAVA_PATH="${DIR}/java"
-  CLS_PATH="${DIR}/third_party/jogamp/jar/*:${DIR}/third_party/junit/*:${JAVA_PATH}"
+  CLS_PATH="${DIR}/third_party/junit/*:${JAVA_PATH}"
 
   if [ ! -d "$OUT_PATH" ]; then
     mkdir -p "$OUT_PATH"

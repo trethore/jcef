@@ -1,0 +1,41 @@
+# Normalize text files by default.
+* text=auto
+
+# Keep LF endings for source files and Unix scripts.
+*.sh text eol=lf
+*.py text eol=lf
+*.java text eol=lf
+*.c text eol=lf
+*.cc text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.m text eol=lf
+*.mm text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Keep CRLF endings for Windows scripts.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Treat bundled artifacts as binary.
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.exe binary
+*.dat binary
+*.bin binary
+*.pak binary

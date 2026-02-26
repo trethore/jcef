@@ -18,8 +18,6 @@ else
       exit 1
     fi
 
-    CLS_PATH="${DIR}/third_party/jogamp/jar/*:$OUT_PATH"
-
     # Necessary for jcef_helper to find libcef.so.
     if [ -n "$LD_LIBRARY_PATH" ]; then
       LD_LIBRARY_PATH="$LIB_PATH:${LD_LIBRARY_PATH}"

@@ -30,7 +30,7 @@ else
 
     LIB_PATH="${LIB_PATH}:${JAVA_LIB_PATH}"
 
-    CLS_PATH="${DIR}/third_party/jogamp/jar/*:$OUT_PATH"
+    CLS_PATH="$OUT_PATH"
     RUN_TYPE="$3"
 
     # Necessary for jcef_helper to find libcef.so.
