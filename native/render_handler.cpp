@@ -11,6 +11,7 @@
 
 namespace {
 
+#if defined(OS_LINUX)
 bool ClearJNIExceptionIfPresent(JNIEnv* env) {
   if (env->ExceptionCheck()) {
     env->ExceptionClear();
@@ -29,6 +30,7 @@ jfieldID GetJNIFieldIDChecked(JNIEnv* env,
   }
   return field;
 }
+#endif
 
 // Create a new java.awt.Rectangle.
 jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
