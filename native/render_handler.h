@@ -61,6 +61,7 @@ class RenderHandler : public CefRenderHandler {
 
  protected:
   ScopedJNIObjectGlobal handle_;
+  CefRect popup_rect_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(RenderHandler);

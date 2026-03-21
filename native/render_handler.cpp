@@ -11,6 +11,25 @@
 
 namespace {
 
+bool ClearJNIExceptionIfPresent(JNIEnv* env) {
+  if (env->ExceptionCheck()) {
+    env->ExceptionClear();
+    return true;
+  }
+  return false;
+}
+
+jfieldID GetJNIFieldIDChecked(JNIEnv* env,
+                              jclass cls,
+                              const char* field_name,
+                              const char* signature) {
+  jfieldID field = env->GetFieldID(cls, field_name, signature);
+  if (!field) {
+    ClearJNIExceptionIfPresent(env);
+  }
+  return field;
+}
+
 // Create a new java.awt.Rectangle.
 jobject NewJNIRect(JNIEnv* env, const CefRect& rect) {
   ScopedJNIClass cls(env, "java/awt/Rectangle");
@@ -227,6 +246,10 @@ void RenderHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
   if (!env)
     return;
 
+  if (!show) {
+    popup_rect_ = CefRect();
+  }
+
   ScopedJNIBrowser jbrowser(env, browser);
   JNI_CALL_VOID_METHOD(env, handle_, "onPopupShow",
                        "(Lorg/cef/browser/CefBrowser;Z)V", jbrowser.get(),
@@ -238,6 +261,8 @@ void RenderHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
   ScopedJNIEnv env;
   if (!env)
     return;
+
+  popup_rect_ = rect;
 
   ScopedJNIObjectLocal jrect(env, NewJNIRect(env, rect));
   if (!jrect)
@@ -302,6 +327,10 @@ void RenderHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
 
   CefRect viewRect;
   GetViewRect(browser, viewRect);
+  const CefRect& paintRect =
+      type == PET_POPUP && popup_rect_.width > 0 && popup_rect_.height > 0
+          ? popup_rect_
+          : viewRect;
 
 #if defined(OS_WIN)
   SetJNIFieldLong(env, cls, jpaintInfo, "shared_texture_handle",
@@ -312,8 +341,8 @@ void RenderHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
 #endif
 
   SetJNIFieldInt(env, cls, jpaintInfo, "format", info.format);
-  SetJNIFieldInt(env, cls, jpaintInfo, "width", viewRect.width);
-  SetJNIFieldInt(env, cls, jpaintInfo, "height", viewRect.height);
+  SetJNIFieldInt(env, cls, jpaintInfo, "width", paintRect.width);
+  SetJNIFieldInt(env, cls, jpaintInfo, "height", paintRect.height);
 
 #if defined(OS_LINUX)
   SetJNIFieldInt(env, cls, jpaintInfo, "plane_count", info.plane_count);
@@ -334,28 +363,42 @@ void RenderHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
       sizes[i] = static_cast<jlong>(info.planes[i].size);
     }
 
-    jfieldID fdsField = env->GetFieldID(cls, "plane_fds", "[I");
-    jfieldID stridesField = env->GetFieldID(cls, "plane_strides", "[I");
-    jfieldID offsetsField = env->GetFieldID(cls, "plane_offsets", "[J");
-    jfieldID sizesField = env->GetFieldID(cls, "plane_sizes", "[J");
+    jfieldID fdsField = GetJNIFieldIDChecked(env, cls, "plane_fds", "[I");
+    jfieldID stridesField =
+        GetJNIFieldIDChecked(env, cls, "plane_strides", "[I");
+    jfieldID offsetsField =
+        GetJNIFieldIDChecked(env, cls, "plane_offsets", "[J");
+    jfieldID sizesField = GetJNIFieldIDChecked(env, cls, "plane_sizes", "[J");
 
-    if (fdsField && stridesField && offsetsField && sizesField) {
-      jintArray fdsArray = env->NewIntArray(plane_count);
-      jintArray stridesArray = env->NewIntArray(plane_count);
-      jlongArray offsetsArray = env->NewLongArray(plane_count);
-      jlongArray sizesArray = env->NewLongArray(plane_count);
+    if (!fdsField || !stridesField || !offsetsField || !sizesField) {
+      return;
+    }
 
-      if (fdsArray && stridesArray && offsetsArray && sizesArray) {
-        env->SetIntArrayRegion(fdsArray, 0, plane_count, fds.data());
-        env->SetIntArrayRegion(stridesArray, 0, plane_count, strides.data());
-        env->SetLongArrayRegion(offsetsArray, 0, plane_count, offsets.data());
-        env->SetLongArrayRegion(sizesArray, 0, plane_count, sizes.data());
+    jintArray fdsArray = env->NewIntArray(plane_count);
+    jintArray stridesArray = env->NewIntArray(plane_count);
+    jlongArray offsetsArray = env->NewLongArray(plane_count);
+    jlongArray sizesArray = env->NewLongArray(plane_count);
+    if (ClearJNIExceptionIfPresent(env) || !fdsArray || !stridesArray ||
+        !offsetsArray || !sizesArray) {
+      return;
+    }
 
-        env->SetObjectField(jpaintInfo.get(), fdsField, fdsArray);
-        env->SetObjectField(jpaintInfo.get(), stridesField, stridesArray);
-        env->SetObjectField(jpaintInfo.get(), offsetsField, offsetsArray);
-        env->SetObjectField(jpaintInfo.get(), sizesField, sizesArray);
-      }
+    env->SetIntArrayRegion(fdsArray, 0, plane_count, fds.data());
+    env->SetIntArrayRegion(stridesArray, 0, plane_count, strides.data());
+    env->SetLongArrayRegion(offsetsArray, 0, plane_count, offsets.data());
+    env->SetLongArrayRegion(sizesArray, 0, plane_count, sizes.data());
+
+    if (ClearJNIExceptionIfPresent(env)) {
+      return;
+    }
+
+    env->SetObjectField(jpaintInfo.get(), fdsField, fdsArray);
+    env->SetObjectField(jpaintInfo.get(), stridesField, stridesArray);
+    env->SetObjectField(jpaintInfo.get(), offsetsField, offsetsArray);
+    env->SetObjectField(jpaintInfo.get(), sizesField, sizesArray);
+
+    if (ClearJNIExceptionIfPresent(env)) {
+      return;
     }
   }
 #endif
