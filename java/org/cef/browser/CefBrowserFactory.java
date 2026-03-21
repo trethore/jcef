@@ -14,7 +14,9 @@ public class CefBrowserFactory {
     public static CefBrowser create(CefClient client, String url, boolean isOffscreenRendered,
             boolean isTransparent, CefRequestContext context, CefBrowserSettings settings) {
         if (isOffscreenRendered) {
-            throw new UnsupportedOperationException("Off-screen rendering is no longer supported");
+            throw new UnsupportedOperationException(
+                    "The old built-in JOGL OSR path is deprecated in this fork. "
+                    + "Use a custom subclass of CefBrowserWindowless instead.");
         }
         return new CefBrowserWr(client, url, context, settings);
     }

@@ -1011,7 +1011,17 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
     windowInfo.SetAsChild(parent, rect);
 #endif
   } else {
-    windowInfo.SetAsWindowless((CefWindowHandle)windowHandle);
+    CefWindowHandle parent = (CefWindowHandle)windowHandle;
+#if defined(OS_WIN)
+    if (!parent && objs->canvas != nullptr) {
+      parent = GetHwndOfCanvas(objs->canvas, env);
+    }
+#elif defined(OS_LINUX)
+    if (!parent && objs->canvas != nullptr) {
+      parent = GetDrawableOfCanvas(objs->canvas, env);
+    }
+#endif
+    windowInfo.SetAsWindowless(parent);
   }
 
   if (transparent == JNI_FALSE) {
@@ -1024,6 +1034,12 @@ void create(std::shared_ptr<JNIObjectsForCreate> objs,
       objs->jbrowserSettings != nullptr) {  // Dev-tools settings are null
     GetJNIFieldInt(env, cefBrowserSettings, objs->jbrowserSettings,
                    "windowless_frame_rate", &settings.windowless_frame_rate);
+    GetJNIFieldBoolean(env, cefBrowserSettings, objs->jbrowserSettings,
+                       "shared_texture_enabled",
+                       &windowInfo.shared_texture_enabled);
+    GetJNIFieldBoolean(env, cefBrowserSettings, objs->jbrowserSettings,
+                       "external_begin_frame_enabled",
+                       &windowInfo.external_begin_frame_enabled);
   }
 
   CefRefPtr<CefBrowser> browserObj;
@@ -2354,6 +2370,14 @@ Java_org_cef_browser_CefBrowser_1N_N_1SetWindowlessFrameRate(JNIEnv* env,
   CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, jbrowser);
   CefRefPtr<CefBrowserHost> host = browser->GetHost();
   host->SetWindowlessFrameRate(frameRate);
+}
+
+JNIEXPORT void JNICALL
+Java_org_cef_browser_CefBrowser_1N_N_1SendExternalBeginFrame(JNIEnv* env,
+                                                             jobject jbrowser) {
+  CefRefPtr<CefBrowser> browser = JNI_GET_BROWSER_OR_RETURN(env, jbrowser);
+  CefRefPtr<CefBrowserHost> host = browser->GetHost();
+  host->SendExternalBeginFrame();
 }
 
 void getWindowlessFrameRate(CefRefPtr<CefBrowserHost> host,
