@@ -20,12 +20,28 @@ public class CefBrowserSettings {
      */
     public int windowless_frame_rate = 0;
 
+    /**
+     * Set to true to enable shared textures for windowless rendering. When
+     * enabled, CEF delivers GPU-backed frames via
+     * {@code CefRenderHandler#onAcceleratedPaint} instead of CPU pixel buffers
+     * via {@code CefRenderHandler#onPaint}.
+     */
+    public boolean shared_texture_enabled = false;
+
+    /**
+     * Set to true to let the client drive windowless frame production via
+     * {@code CefBrowser#sendExternalBeginFrame()}.
+     */
+    public boolean external_begin_frame_enabled = false;
+
     public CefBrowserSettings() {}
 
     @Override
     public CefBrowserSettings clone() {
         CefBrowserSettings tmp = new CefBrowserSettings();
         tmp.windowless_frame_rate = windowless_frame_rate;
+        tmp.shared_texture_enabled = shared_texture_enabled;
+        tmp.external_begin_frame_enabled = external_begin_frame_enabled;
         return tmp;
     }
 }

@@ -431,6 +431,12 @@ class CefBrowserWr extends CefBrowser_N {
     }
 
     @Override
+    public void sendExternalBeginFrame() {
+        throw new UnsupportedOperationException(
+                "You can only send external begin frames on OSR browser");
+    }
+
+    @Override
     public CompletableFuture<Integer> getWindowlessFrameRate() {
         throw new UnsupportedOperationException(
                 "You can only get windowless framerate on OSR browser");

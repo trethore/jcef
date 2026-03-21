@@ -4,6 +4,7 @@
 
 package org.cef.handler;
 
+import org.cef.browser.CefAcceleratedPaintEvent;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefPaintEvent;
 import org.cef.callback.CefDragData;
@@ -102,6 +103,32 @@ public interface CefRenderHandler {
      */
     public void onPaint(CefBrowser browser, boolean popup, Rectangle[] dirtyRects,
             ByteBuffer buffer, int width, int height);
+
+    /**
+     * Called when shared-texture windowless rendering is enabled and a frame is
+     * available as a platform-specific GPU resource.
+     */
+    public default void onAcceleratedPaint(CefBrowser browser, boolean popup,
+            Rectangle[] dirtyRects, CefAcceleratedPaintInfo info) {}
+
+    /**
+     * Add provided listener for accelerated paint events.
+     */
+    public default void addOnAcceleratedPaintListener(
+            Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    /**
+     * Remove existing accelerated paint listeners and replace with provided
+     * listener.
+     */
+    public default void setOnAcceleratedPaintListener(
+            Consumer<CefAcceleratedPaintEvent> listener) {}
+
+    /**
+     * Remove provided accelerated paint listener.
+     */
+    public default void removeOnAcceleratedPaintListener(
+            Consumer<CefAcceleratedPaintEvent> listener) {}
 
     /**
      * Add provided listener.
