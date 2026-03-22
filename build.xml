@@ -2,7 +2,19 @@
 <project name="javaLauncher" default="default" basedir=".">
 
   <property environment="env"/>
-  <property name="jdk7.path"  value="${env.JDK_17}"/>
+  <condition property="env.java.home.path" value="${env.JAVA_HOME}" else="${java.home}">
+    <isset property="env.JAVA_HOME"/>
+  </condition>
+  <condition property="default.jdk.path" value="${env.JDK_17}" else="${env.java.home.path}">
+    <isset property="env.JDK_17"/>
+  </condition>
+  <condition property="legacy.or.default.jdk.path" value="${jdk7.path}" else="${default.jdk.path}">
+    <isset property="jdk7.path"/>
+  </condition>
+  <condition property="selected.jdk.path" value="${jdk.path}" else="${legacy.or.default.jdk.path}">
+    <isset property="jdk.path"/>
+  </condition>
+  <property name="javac.executable" value="${selected.jdk.path}/bin/javac"/>
   <property name="out.path"   value="${env.OUT_PATH}"/>
   <property name="out.name"   value="${env.OUT_NAME}"/>
   <property name="out.id"     value="${env.OUT_ID}"/>
@@ -19,10 +31,13 @@
   <target name="compile">
     <mkdir dir="${out.path}"/>
     <javac encoding="UTF8" nowarn="on" deprecation="off" debug="on" includeantruntime="false" destdir="${out.path}"
-           executable="/usr/bin/javac" fork="true" memoryinitialsize="32m" memorymaximumsize="128m" includeJavaRuntime="yes"
-           target="1.8" source="1.8">
+           executable="${javac.executable}" fork="true" memoryinitialsize="32m" memorymaximumsize="256m"
+           target="17" source="17">
       <compilerarg value="-XDignore.symbol.file"/>
-      <classpath location="${jdk7.path}/jre/lib/rt.jar" />
+      <compilerarg value="--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED"/>
+      <compilerarg value="--add-exports=java.desktop/sun.awt=ALL-UNNAMED"/>
+      <compilerarg value="--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED"/>
+      <compilerarg value="--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED"/>
       <classpath refid="class.path"/>
       <src path="java/tests/"/>
       <src path="java/org/cef/"/>
@@ -62,6 +77,10 @@
       </classpath>
       <classpath dir="third_party/junit" includes="junit*.jar"/>
       <option value="-Djava.library.path=$APP_ROOT/Contents/Java/:$APP_ROOT/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries" />
+      <option value="--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED" />
+      <option value="--add-exports=java.desktop/sun.awt=ALL-UNNAMED" />
+      <option value="--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED" />
+      <option value="--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED" />
       <option value="--add-opens=java.desktop/sun.awt=ALL-UNNAMED" />
       <option value="--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED" />
       <option value="--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED" />

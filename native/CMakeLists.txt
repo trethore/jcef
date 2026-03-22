@@ -330,7 +330,7 @@ if(OS_MAC)
     # Build the main app bundle.
     COMMAND ${ANT_EXECUTABLE}
             -buildfile ${CMAKE_SOURCE_DIR}
-            -Djdk7.path=${JAVA_DIR}
+            -Djdk.path=${JAVA_DIR}
             -Dout.path=${CEF_TARGET_OUT_DIR}
             -Dout.name=${JCEF_APP_NAME}
             -Dout.id=org.jcef.jcef
@@ -427,4 +427,3 @@ if(OS_WINDOWS)
   COPY_FILES("${JCEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
   COPY_FILES("${JCEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 endif()
-

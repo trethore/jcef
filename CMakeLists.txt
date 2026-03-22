@@ -203,7 +203,7 @@ message(STATUS "Using Python: ${PYTHON_EXECUTABLE}")
 #
 
 # Minimum required Java version.
-set(JDK_MIN_VERSION 1.7)
+set(JDK_MIN_VERSION 17)
 
 set(JAVA_FATAL_ERROR "A Java installation is required. Set the JAVA_HOME "
                      "environment variable to explicitly specify the Java "
