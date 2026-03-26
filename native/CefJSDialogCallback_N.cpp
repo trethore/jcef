@@ -3,7 +3,9 @@
 // can be found in the LICENSE file.
 
 #include "CefJSDialogCallback_N.h"
+#include "include/base/cef_callback.h"
 #include "include/cef_jsdialog_handler.h"
+#include "include/cef_task.h"
 #include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
@@ -20,6 +22,12 @@ void ClearSelf(JNIEnv* env, jobject obj) {
                                           "CefJSDialogCallback");
 }
 
+void ContinueOnUIThread(CefRefPtr<CefJSDialogCallback> callback,
+                        bool success,
+                        CefString user_input) {
+  callback->Continue(success, user_input);
+}
+
 }  // namespace
 
 JNIEXPORT void JNICALL
@@ -31,6 +39,17 @@ Java_org_cef_callback_CefJSDialogCallback_1N_N_1Continue(JNIEnv* env,
   CefRefPtr<CefJSDialogCallback> callback = GetSelf(self);
   if (!callback)
     return;
-  callback->Continue((jsuccess != JNI_FALSE), GetJNIString(env, juser_input));
+
+  const bool success = (jsuccess != JNI_FALSE);
+  CefString user_input = GetJNIString(env, juser_input);
+
+  if (CefCurrentlyOn(TID_UI)) {
+    callback->Continue(success, user_input);
+  } else {
+    CefPostTask(TID_UI,
+                base::BindOnce(&ContinueOnUIThread, callback, success,
+                               user_input));
+  }
+
   ClearSelf(env, obj);
 }
