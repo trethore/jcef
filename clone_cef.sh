@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET_DIR="${SCRIPT_DIR}/cef"
+TARGET_DIR="${SCRIPT_DIR}/references/cef"
 CEF_REPO_URL="https://github.com/chromiumembedded/cef"
 
 if [ -e "${TARGET_DIR}" ]; then

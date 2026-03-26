@@ -49,7 +49,7 @@ Thumbs.db
 # JCEF generated files
 /native/jcef_version.h
 # CEF downloads
-/cef
+references/
 /third_party/cef/cef_binary_*
 # clang-format downloads
 /tools/buildtools/external_bin
