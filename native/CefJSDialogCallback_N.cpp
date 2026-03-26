@@ -6,6 +6,7 @@
 #include "include/base/cef_callback.h"
 #include "include/cef_jsdialog_handler.h"
 #include "include/cef_task.h"
+#include "include/wrapper/cef_closure_task.h"
 #include "jni_scoped_helpers.h"
 #include "jni_util.h"
 
@@ -46,9 +47,9 @@ Java_org_cef_callback_CefJSDialogCallback_1N_N_1Continue(JNIEnv* env,
   if (CefCurrentlyOn(TID_UI)) {
     callback->Continue(success, user_input);
   } else {
-    CefPostTask(TID_UI,
-                base::BindOnce(&ContinueOnUIThread, callback, success,
-                               user_input));
+    CefPostTask(TID_UI, CefCreateClosureTask(base::BindOnce(
+                            &ContinueOnUIThread, callback, success,
+                            user_input)));
   }
 
   ClearSelf(env, obj);
