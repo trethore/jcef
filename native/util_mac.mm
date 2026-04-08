@@ -509,13 +509,28 @@ namespace util {
 void AddCefBrowser(CefRefPtr<CefBrowser> browser) {
   if (!browser.get())
     return;
-  CefWindowHandle handle = browser->GetHost()->GetWindowHandle();
+
+  // Off-screen browsers on macOS use GetWindowHandle() for the caller-supplied
+  // parent view passed to SetAsWindowless(). That handle is not the hosted
+  // browser child view wrapped by CefBrowserContentView, so there is nothing to
+  // register here.
+  if (browser->GetHost()->IsWindowRenderingDisabled())
+    return;
+
+  NSView* handle =
+      CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(browser->GetHost()->GetWindowHandle());
+  if (!handle)
+    return;
+
+  NSView* superView = [handle superview];
+  if (![superView isKindOfClass:[CefBrowserContentView class]])
+    return;
+
   g_browsers_lock_.Lock();
   g_browsers_.insert(handle);
   g_browsers_lock_.Unlock();
-  CefBrowserContentView* browserImpl =
-      (CefBrowserContentView*)[CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(handle)
-          superview];
+
+  CefBrowserContentView* browserImpl = (CefBrowserContentView*)superView;
   [browserImpl addCefBrowser:browser];
 }
 
