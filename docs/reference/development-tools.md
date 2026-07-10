@@ -30,6 +30,7 @@
 | Tool | Purpose |
 | --- | --- |
 | `tools/dev/clone_cef_reference.sh` | Clone CEF source into ignored `references/cef` for browsing |
+| `tools/dev/check_markdown_links.py` | Validate local links in tracked Markdown files |
 
 Generated output belongs in `jcef_build/`, `out/`, or `binary_distrib/` and is
 ignored by Git.

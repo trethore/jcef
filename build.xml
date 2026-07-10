@@ -2,16 +2,10 @@
 <project name="javaLauncher" default="default" basedir=".">
 
   <property environment="env"/>
-  <condition property="env.java.home.path" value="${env.JAVA_HOME}" else="${java.home}">
+  <condition property="default.jdk.path" value="${env.JAVA_HOME}" else="${java.home}">
     <isset property="env.JAVA_HOME"/>
   </condition>
-  <condition property="default.jdk.path" value="${env.JDK_17}" else="${env.java.home.path}">
-    <isset property="env.JDK_17"/>
-  </condition>
-  <condition property="legacy.or.default.jdk.path" value="${jdk7.path}" else="${default.jdk.path}">
-    <isset property="jdk7.path"/>
-  </condition>
-  <condition property="selected.jdk.path" value="${jdk.path}" else="${legacy.or.default.jdk.path}">
+  <condition property="selected.jdk.path" value="${jdk.path}" else="${default.jdk.path}">
     <isset property="jdk.path"/>
   </condition>
   <property name="javac.executable" value="${selected.jdk.path}/bin/javac"/>
