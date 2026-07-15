@@ -108,6 +108,10 @@ CefRefPtr<CefValue> GetCefValueFromJNIList(JNIEnv* env, const jobject& obj);
 jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode);
 cef_errorcode_t GetJNIErrorCode(JNIEnv* env, jobject jerrorCode);
 
+// Create a new JNI window-open disposition.
+jobject NewJNIWindowOpenDisposition(JNIEnv* env,
+                                    cef_window_open_disposition_t disposition);
+
 jobject NewJNIBoolean(JNIEnv* env, const bool value);
 jobject NewJNIInteger(JNIEnv* env, const int value);
 jobject NewJNIDouble(JNIEnv* env, const double value);

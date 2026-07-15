@@ -32,6 +32,12 @@ public abstract class CefRequestHandlerAdapter implements CefRequestHandler {
     }
 
     @Override
+    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String targetUrl,
+            CefWindowOpenDisposition targetDisposition, boolean userGesture) {
+        return onOpenURLFromTab(browser, frame, targetUrl, userGesture);
+    }
+
+    @Override
     public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame,
             CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator,
             BoolRef disableDefaultHandling) {

@@ -68,6 +68,23 @@ public interface CefRequestHandler {
             CefBrowser browser, CefFrame frame, String target_url, boolean user_gesture);
 
     /**
+     * Called on the UI thread before onBeforeBrowse in certain limited cases where navigating a
+     * new or different browser might be desirable.
+     *
+     * @param browser The corresponding browser.
+     * @param frame The frame generating the event. Instance only valid within the scope of this
+     *         method.
+     * @param targetUrl The requested URL.
+     * @param targetDisposition The requested navigation disposition.
+     * @param userGesture True if the request was initiated by a user gesture.
+     * @return True to cancel navigation or false to continue.
+     */
+    default boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String targetUrl,
+            CefWindowOpenDisposition targetDisposition, boolean userGesture) {
+        return onOpenURLFromTab(browser, frame, targetUrl, userGesture);
+    }
+
+    /**
      * Called on the IO thread before a resource request is initiated. The |browser| and |frame|
      * values represent the source of the request. If this callback returns null the same method
      * will be called on the associated CefRequestContextHandler, if any.

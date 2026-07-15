@@ -11,7 +11,6 @@
 LifeSpanHandler::LifeSpanHandler(JNIEnv* env, jobject handler)
     : handle_(env, handler) {}
 
-// TODO(JCEF): Expose all parameters.
 bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     int popup_id,
@@ -25,29 +24,31 @@ bool LifeSpanHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                                     CefBrowserSettings& settings,
                                     CefRefPtr<CefDictionaryValue>& extra_info,
                                     bool* no_javascript_access) {
-  if (browser->GetHost()->IsWindowRenderingDisabled()) {
-    // Cancel popups in off-screen rendering mode.
-    return true;
-  }
+  const bool force_cancel = browser->GetHost()->IsWindowRenderingDisabled();
 
   ScopedJNIEnv env;
   if (!env)
-    return false;
+    return force_cancel;
 
   ScopedJNIBrowser jbrowser(env, browser);
   ScopedJNIFrame jframe(env, frame);
   jframe.SetTemporary();
   ScopedJNIString jtargetUrl(env, target_url);
   ScopedJNIString jtargetFrameName(env, target_frame_name);
+  ScopedJNIObjectLocal jtargetDisposition(
+      env, NewJNIWindowOpenDisposition(env, target_disposition));
   jboolean jreturn = JNI_FALSE;
 
   JNI_CALL_METHOD(env, handle_, "onBeforePopup",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/"
-                  "CefFrame;Ljava/lang/String;Ljava/lang/String;)Z",
-                  Boolean, jreturn, jbrowser.get(), jframe.get(),
-                  jtargetUrl.get(), jtargetFrameName.get());
+                  "CefFrame;ILjava/lang/String;Ljava/lang/String;Lorg/cef/"
+                  "handler/CefWindowOpenDisposition;Z)Z",
+                  Boolean, jreturn, jbrowser.get(), jframe.get(), popup_id,
+                  jtargetUrl.get(), jtargetFrameName.get(),
+                  jtargetDisposition.get(),
+                  (user_gesture ? JNI_TRUE : JNI_FALSE));
 
-  return (jreturn != JNI_FALSE);
+  return force_cancel || (jreturn != JNI_FALSE);
 }
 
 void LifeSpanHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {

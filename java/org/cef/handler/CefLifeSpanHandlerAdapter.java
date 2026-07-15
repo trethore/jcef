@@ -20,6 +20,13 @@ public abstract class CefLifeSpanHandlerAdapter implements CefLifeSpanHandler {
     }
 
     @Override
+    public boolean onBeforePopup(CefBrowser browser, CefFrame frame, int popupId, String targetUrl,
+            String targetFrameName, CefWindowOpenDisposition targetDisposition,
+            boolean userGesture) {
+        return onBeforePopup(browser, frame, targetUrl, targetFrameName);
+    }
+
+    @Override
     public void onAfterCreated(CefBrowser browser) {}
 
     @Override

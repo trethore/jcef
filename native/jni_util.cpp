@@ -868,6 +868,21 @@ jobject NewJNIErrorCode(JNIEnv* env, cef_errorcode_t errorCode) {
   return jerrorCode.Release();
 }
 
+jobject NewJNIWindowOpenDisposition(JNIEnv* env,
+                                    cef_window_open_disposition_t disposition) {
+  ScopedJNIClass cls(env, "org/cef/handler/CefWindowOpenDisposition");
+  if (!cls)
+    return nullptr;
+
+  jmethodID method = env->GetStaticMethodID(
+      cls, "fromValue", "(I)Lorg/cef/handler/CefWindowOpenDisposition;");
+  if (!method)
+    return nullptr;
+
+  return env->CallStaticObjectMethod(cls, method,
+                                     static_cast<jint>(disposition));
+}
+
 jobject NewJNIBoolean(JNIEnv* env, const bool value) {
   ScopedJNIClass cls(env, "java/lang/Boolean");
   if (!cls)

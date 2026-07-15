@@ -13,16 +13,36 @@ import org.cef.browser.CefFrame;
  */
 public interface CefLifeSpanHandler {
     /**
-     * Called on the IO thread before a new popup window is created.
+     * Called on the UI thread before a new popup window is created.
      * @param browser The source of the popup request.
      * @param frame The source of the popup request. Instance only valid within the scope of this
      *         method.
      * @param target_url May be empty if none is specified with the request.
      * @param target_frame_name May be empty if none is specified with the request.
-     * @return True to cancel creation of the popup window or false to proceed.
+     * @return True to cancel creation of the popup window or false to proceed. Windowless browsers
+     *         always cancel popup creation after this callback returns.
      */
     boolean onBeforePopup(
             CefBrowser browser, CefFrame frame, String target_url, String target_frame_name);
+
+    /**
+     * Called on the UI thread before a new popup window is created.
+     * @param browser The source of the popup request.
+     * @param frame The source of the popup request. Instance only valid within the scope of this
+     *         method.
+     * @param popupId The identifier assigned to the popup browser.
+     * @param targetUrl May be empty if none is specified with the request.
+     * @param targetFrameName May be empty if none is specified with the request.
+     * @param targetDisposition The requested navigation disposition.
+     * @param userGesture True if the request was initiated by a user gesture.
+     * @return True to cancel creation of the popup window or false to proceed. Windowless browsers
+     *         always cancel popup creation after this callback returns.
+     */
+    default boolean onBeforePopup(CefBrowser browser, CefFrame frame, int popupId, String targetUrl,
+            String targetFrameName, CefWindowOpenDisposition targetDisposition,
+            boolean userGesture) {
+        return onBeforePopup(browser, frame, targetUrl, targetFrameName);
+    }
 
     /**
      * Handle creation of a new browser window.

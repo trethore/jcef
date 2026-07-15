@@ -36,6 +36,7 @@ import org.cef.handler.CefResourceHandler;
 import org.cef.handler.CefResourceRequestHandler;
 import org.cef.handler.CefScreenInfo;
 import org.cef.handler.CefWindowHandler;
+import org.cef.handler.CefWindowOpenDisposition;
 import org.cef.misc.BoolRef;
 import org.cef.misc.CefPrintSettings;
 import org.cef.misc.StringRef;
@@ -550,6 +551,18 @@ public class CefClient extends CefClientHandler
     }
 
     @Override
+    public boolean onBeforePopup(CefBrowser browser, CefFrame frame, int popupId, String targetUrl,
+            String targetFrameName, CefWindowOpenDisposition targetDisposition,
+            boolean userGesture) {
+        if (isDisposed_) return true;
+        if (lifeSpanHandler_ != null && browser != null) {
+            return lifeSpanHandler_.onBeforePopup(browser, frame, popupId, targetUrl,
+                    targetFrameName, targetDisposition, userGesture);
+        }
+        return false;
+    }
+
+    @Override
     public void onAfterCreated(CefBrowser browser) {
         if (browser == null) return;
 
@@ -838,6 +851,17 @@ public class CefClient extends CefClientHandler
         if (isDisposed_) return true;
         if (requestHandler_ != null && browser != null)
             return requestHandler_.onOpenURLFromTab(browser, frame, target_url, user_gesture);
+        return false;
+    }
+
+    @Override
+    public boolean onOpenURLFromTab(CefBrowser browser, CefFrame frame, String targetUrl,
+            CefWindowOpenDisposition targetDisposition, boolean userGesture) {
+        if (isDisposed_) return true;
+        if (requestHandler_ != null && browser != null) {
+            return requestHandler_.onOpenURLFromTab(
+                    browser, frame, targetUrl, targetDisposition, userGesture);
+        }
         return false;
     }
 

@@ -57,13 +57,17 @@ bool RequestHandler::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
   ScopedJNIFrame jframe(env, frame);
   jframe.SetTemporary();
   ScopedJNIString jtargetUrl(env, target_url);
+  ScopedJNIObjectLocal jtargetDisposition(
+      env, NewJNIWindowOpenDisposition(env, target_disposition));
   jboolean jresult = JNI_FALSE;
 
   JNI_CALL_METHOD(env, handle_, "onOpenURLFromTab",
                   "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;"
-                  "Ljava/lang/String;Z)Z",
+                  "Ljava/lang/String;Lorg/cef/handler/"
+                  "CefWindowOpenDisposition;Z)Z",
                   Boolean, jresult, jbrowser.get(), jframe.get(),
-                  jtargetUrl.get(), (user_gesture ? JNI_TRUE : JNI_FALSE));
+                  jtargetUrl.get(), jtargetDisposition.get(),
+                  (user_gesture ? JNI_TRUE : JNI_FALSE));
 
   return (jresult != JNI_FALSE);
 }
