@@ -17,6 +17,7 @@ import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefMenuModel;
 import org.cef.callback.CefPrintDialogCallback;
 import org.cef.callback.CefPrintJobCallback;
+import org.cef.callback.CefRunContextMenuCallback;
 import org.cef.handler.CefClientHandler;
 import org.cef.handler.CefContextMenuHandler;
 import org.cef.handler.CefDialogHandler;
@@ -252,6 +253,14 @@ public class CefClient extends CefClientHandler
             CefBrowser browser, CefFrame frame, CefContextMenuParams params, CefMenuModel model) {
         if (contextMenuHandler_ != null && browser != null)
             contextMenuHandler_.onBeforeContextMenu(browser, frame, params, model);
+    }
+
+    @Override
+    public boolean runContextMenu(CefBrowser browser, CefFrame frame, CefContextMenuParams params,
+            CefMenuModel model, CefRunContextMenuCallback callback) {
+        if (contextMenuHandler_ != null && browser != null)
+            return contextMenuHandler_.runContextMenu(browser, frame, params, model, callback);
+        return false;
     }
 
     @Override

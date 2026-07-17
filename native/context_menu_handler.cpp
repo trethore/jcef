@@ -20,6 +20,19 @@ class ScopedJNIContextMenuParams
             "CefContextMenuParams") {}
 };
 
+// JNI CefRunContextMenuCallback object.
+class ScopedJNIRunContextMenuCallback
+    : public ScopedJNIObject<CefRunContextMenuCallback> {
+ public:
+  ScopedJNIRunContextMenuCallback(JNIEnv* env,
+                                  CefRefPtr<CefRunContextMenuCallback> obj)
+      : ScopedJNIObject<CefRunContextMenuCallback>(
+            env,
+            obj,
+            "org/cef/callback/CefRunContextMenuCallback_N",
+            "CefRunContextMenuCallback") {}
+};
+
 }  // namespace
 
 ContextMenuHandler::ContextMenuHandler(JNIEnv* env, jobject handler)
@@ -48,6 +61,42 @@ void ContextMenuHandler::OnBeforeContextMenu(
                        "Lorg/cef/callback/CefMenuModel;)V",
                        jbrowser.get(), jframe.get(), jparams.get(),
                        jmodel.get());
+}
+
+bool ContextMenuHandler::RunContextMenu(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefContextMenuParams> params,
+    CefRefPtr<CefMenuModel> model,
+    CefRefPtr<CefRunContextMenuCallback> callback) {
+  ScopedJNIEnv env;
+  if (!env)
+    return false;
+
+  ScopedJNIBrowser jbrowser(env, browser);
+  ScopedJNIFrame jframe(env, frame);
+  jframe.SetTemporary();
+  ScopedJNIContextMenuParams jparams(env, params);
+  jparams.SetTemporary();
+  ScopedJNIMenuModel jmodel(env, model);
+  jmodel.SetTemporary();
+  ScopedJNIRunContextMenuCallback jcallback(env, callback);
+  jboolean result = JNI_FALSE;
+
+  JNI_CALL_METHOD(
+      env, handle_, "runContextMenu",
+      "(Lorg/cef/browser/CefBrowser;Lorg/cef/browser/CefFrame;Lorg/cef/"
+      "callback/CefContextMenuParams;Lorg/cef/callback/CefMenuModel;Lorg/cef/"
+      "callback/CefRunContextMenuCallback;)Z",
+      Boolean, result, jbrowser.get(), jframe.get(), jparams.get(),
+      jmodel.get(), jcallback.get());
+
+  if (result == JNI_FALSE) {
+    // If Java returns false the callback won't be used and can be released.
+    jcallback.SetTemporary();
+  }
+
+  return (result != JNI_FALSE);
 }
 
 bool ContextMenuHandler::OnContextMenuCommand(

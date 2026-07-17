@@ -8,6 +8,7 @@ import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
+import org.cef.callback.CefRunContextMenuCallback;
 
 /**
  * Implement this interface to handle context menu events. The methods of this
@@ -28,6 +29,27 @@ public interface CefContextMenuHandler {
      */
     public void onBeforeContextMenu(
             CefBrowser browser, CefFrame frame, CefContextMenuParams params, CefMenuModel model);
+
+    /**
+     * Called to allow custom display of the context menu. Return true for
+     * custom display and execute callback either synchronously or
+     * asynchronously with the selected command. Return false for default
+     * display. The params and model instances are only valid within the scope
+     * of this method.
+     *
+     * @param browser The browser generating the event.
+     * @param frame The frame generating the event. Instance only valid within the scope
+     *      of this method.
+     * @param params Provides information about the context menu state.
+     * @param model Contains the context menu model resulting from
+     *      onBeforeContextMenu().
+     * @param callback Callback to continue or cancel custom menu display.
+     * @return true for custom display or false for the default implementation.
+     */
+    public default boolean runContextMenu(CefBrowser browser, CefFrame frame,
+            CefContextMenuParams params, CefMenuModel model, CefRunContextMenuCallback callback) {
+        return false;
+    }
 
     /**
      * Called to execute a command selected from the context menu. Return true if
