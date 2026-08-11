@@ -7,6 +7,10 @@ package org.cef.callback;
 class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     CefQueryCallback_N() {}
 
+    protected boolean isPersistent() {
+        return false;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         failure(-1, "Unexpected call to CefQueryCallback_N::finalize()");
@@ -16,7 +20,7 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
     @Override
     public void success(String response) {
         try {
-            N_Success(getNativeRef(null), response);
+            N_Success(getNativeRef(null), response, isPersistent());
         } catch (UnsatisfiedLinkError ule) {
             ule.printStackTrace();
         }
@@ -31,6 +35,15 @@ class CefQueryCallback_N extends CefNativeAdapter implements CefQueryCallback {
         }
     }
 
-    private final native void N_Success(long self, String response);
+    private final native void N_Success(long self, String response, boolean persistent);
     private final native void N_Failure(long self, int error_code, String error_message);
+}
+
+class CefQueryCallback_N_Persistent extends CefQueryCallback_N {
+    CefQueryCallback_N_Persistent() {}
+
+    @Override
+    protected boolean isPersistent() {
+        return true;
+    }
 }
